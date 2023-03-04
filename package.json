@@ -1,5 +1,12 @@
 {
     "scripts": {
-        "start": "ts-node ./index.ts"
+        "start": "ts-node ./index.ts",
+        "build": "tsc ./handler.ts; ts-node ./index.ts"
+    },
+    "dependencies": {
+        "node-fetch": "2"
+    },
+    "devDependencies": {
+        "@types/node-fetch": "^2.6.2"
     }
 }
