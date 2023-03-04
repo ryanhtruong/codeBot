@@ -2,25 +2,49 @@
 // pizzabot - the brain behind Discord bot chi the code cat    
 // Built by Ryan Truong
 exports.__esModule = true;
-console.log("Coming to life...");
 var discord_js_1 = require("discord.js");
 var handler_1 = require("./handler");
-var config_json_1 = require("./config.json");
+var Config = require("./config.json");
 // create client
-var client = new discord_js_1.Client({ intents: [discord_js_1.GatewayIntentBits.Guilds] });
+var client = new discord_js_1.Client({ intents: [
+        discord_js_1.GatewayIntentBits.Guilds,
+        discord_js_1.GatewayIntentBits.GuildMessages,
+        discord_js_1.GatewayIntentBits.MessageContent
+    ] });
 var handler = new handler_1["default"]();
-// client.on('ready') is executed when client.login() is called (when pizzabot connects to Discord).
-client.on('ready', function () {
-    // console.log(`Logging in: ${client.user!.tag}`);
-    console.log("starting...");
+// client.once('ready') is executed when client.login() is called (when pizzabot connects to Discord).
+client.once("ready", function () {
+    console.log("Logging in: ".concat(client.user.tag));
 });
-client.login(config_json_1["default"].token);
-client.on('message', function (msg) {
+console.log("Coming to life...");
+client.login(Config.token);
+client.on("messageCreate", function (msg) {
     if (msg.author.bot)
         return;
     else {
-        if (msg.content[0] == '/') {
-            msg.reply(":3");
+        // check if msg is intended for bot
+        if (msg.content[0] == '%') {
+            // get command selection from msg
+            var content = msg.content.substring(1).split(' ');
+            switch (content[0].toLowerCase()) {
+                case "create":
+                    console.log("create heard!");
+                    var result = handler.buildRunner(msg);
+                    if (result != "")
+                        msg.reply(result);
+                    break;
+                case "get_status":
+                    console.log("get_status heard!");
+                    handler.getStatus(msg.content.slice(12));
+                    break;
+                case "get_details":
+                    console.log("get_details heard");
+                    handler.getDetails(msg.content.slice(13));
+                    break;
+                default:
+                    msg.reply("ERROR: Available actions are 'create', 'get_status', 'get_details'.");
+            }
+            msg.reply("".concat(content[0], " :3"));
         }
     }
 });
