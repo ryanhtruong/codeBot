@@ -1,4 +1,4 @@
-// codeBot - the brain behind Discord bot chi the code cat    
+// codeBot - a Discord bot for running code in Discord using Paiza API
 // Built by Ryan Truong
 
 import { Client, Events, GatewayIntentBits } from "discord.js";
@@ -25,6 +25,7 @@ client.login(Config.token);
 client.on("messageCreate", (msg: any) => {
 	// check if msg is intended for bot
 	if (!msg.author.bot && msg.content[0] == '/') {
+		// get handler to parse intention and act accordingly
 		handler.selectCmd(msg);
 	}
 });
