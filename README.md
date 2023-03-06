@@ -13,7 +13,9 @@ When setting up this bot, be sure to include a file called "Config.json" in the 
 Any of the following commands can be used to communicate with the bot:
 
   /create [language] [```code```]
+  
   /get_status [request id]
+  
   /get_details [request id]
   
 where the [] represent parameters.
