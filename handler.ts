@@ -11,25 +11,6 @@ interface Create {
     longpoll_timeout?: number;
 }
 
-// interface Details  {
-//     // "id": "ZuQNkgSvVl3niPTstBYqeg",
-//     // "language": "python3",
-//     // "note": null,
-//     // "status": "completed",
-//     // "build_stdout": null,
-//     // "build_stderr": null,
-//     // "build_exit_code": 0,
-//     // "build_time": null,
-//     // "build_memory": null,
-//     // "build_result": null,
-//     // "stdout": "10000\n",
-//     // "stderr": "",
-//     // "exit_code": 0,
-//     // "time": "0.03",
-//     // "memory": 9568000,
-//     // "connections": 0,
-//     // "result": "success"
-// }
 
 /*  Introducing the Handler™
     Surname: Handler™

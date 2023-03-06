@@ -25,6 +25,7 @@ client.login(Config.token);
 client.on("messageCreate", (msg: any) => {
 	// check if msg is intended for bot
 	if (!msg.author.bot && msg.content[0] == '/') {
+		// get handler to parse intention and act accordingly
 		handler.selectCmd(msg);
 	}
 });
