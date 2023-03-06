@@ -1,4 +1,4 @@
-// pizzabot - the brain behind Discord bot chi the code cat    
+// codeBot - the brain behind Discord bot chi the code cat    
 // Built by Ryan Truong
 
 import { Client, Events, GatewayIntentBits } from "discord.js";
