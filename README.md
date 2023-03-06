@@ -1,4 +1,4 @@
-# pizzabot
+# codeBot
 
 Discord bot that allows users to run code in Discord via message.
 
