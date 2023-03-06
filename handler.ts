@@ -11,14 +11,30 @@ interface Create {
     longpoll_timeout?: number;
 }
 
+// interface Details  {
+//     // "id": "ZuQNkgSvVl3niPTstBYqeg",
+//     // "language": "python3",
+//     // "note": null,
+//     // "status": "completed",
+//     // "build_stdout": null,
+//     // "build_stderr": null,
+//     // "build_exit_code": 0,
+//     // "build_time": null,
+//     // "build_memory": null,
+//     // "build_result": null,
+//     // "stdout": "10000\n",
+//     // "stderr": "",
+//     // "exit_code": 0,
+//     // "time": "0.03",
+//     // "memory": 9568000,
+//     // "connections": 0,
+//     // "result": "success"
+// }
+
 /*  Introducing the Handler™
     Surname: Handler™
     Given name: the
     Likeness: (⌐■_■)
-    Age: old as time
-    Occupation: Handler
-    Hobbies: dexterity tricks //please get the joke//
-    Grad Quote: "i'll Handle™ this (⌐■_■)"
     Fun fact: will bring stolen door handles to show-and-tell
 */
 export default class Handler {
@@ -40,25 +56,42 @@ export default class Handler {
     }
 
     // parses intention from user input and acts accordingly
-    public selectCmd(msg: any) {
+    public async selectCmd(msg: any) {
         // get command selection from msg
 		let content : string[] = msg.content.substring(1).split(' ');
 		// initialize promise 
-		let promise: Promise<any>;
+		let data: any;
 		switch(content[0].toLowerCase()) {
             case "create":
                 this.createRunner(msg);
                 break;
             case "get_status":
-                promise = this.getStatus(msg);
-                msg.reply(`${promise}`);
+                console.log(content[1]);
+                data = await this.getStatus(content[1]);
+                // TODO: Implement output
+                console.log(data);
+                msg.reply(`\`\`\`
+                id: ${data.id}
+                status: ${data.status}\`\`\``);
                 break;
             case "get_details":
-                promise = this.getDetails(msg);
-                msg.reply(`${JSON.stringify(promise)}`);
+                console.log(content[1]);
+                data = await this.getDetails(content[1]);
+                // TODO: Implement output
+                msg.reply(`\`\`\`
+                id: ${data.id}
+                language: ${data.language}
+                status: ${data.status}
+                stdout: ${data.stdout}
+                stderr: ${data.stderr}
+                exit_code: ${data.exit_code}
+                time: ${data.time}
+                memory: ${data.memory}
+                connections: ${data.connections}
+                result: ${data.result}\`\`\``);
                 break;
             default:
-                msg.reply("ERROR: Available actions are 'create', 'get_status', 'get_details'.");
+                msg.reply("ERROR: Available actions are '/create', '/get_status', '/get_details'.");
         }
     }
 
@@ -71,23 +104,21 @@ export default class Handler {
     private checkCreateValid(msg: any, create: Create) {
 
         // build error message for user - useful for if the user input fails on multiple fronts
-        let errorResponse: string = "ERROR: ";
-
-        // inform user code is invalid -- must be encased by ```.
-        if (create.source_code == "ERROR: Please encase your code in a multi-line code block using ```.") {
-            console.log("checkCreateValid >> source code input invalid");
-            errorResponse = "Please encase your code in a multi-line code block using ```.";
-        }
+        let errorResponse: string = "";
 
         // inform user language is invalid -- given language cannot be handled by Paiza.
         if (!this.validLanguages.has(create.language)) {
-            console.log("checkCreateValid >> language input invalid");
-            errorResponse.concat(errorResponse, "Your language is not accepted by Paiza.");
+            errorResponse = errorResponse.concat("Input language not accepted. ");
+        }
+
+        // inform user code is invalid -- must be encased by ```.
+        if (create.source_code == "") {
+            errorResponse = errorResponse.concat("Please encase your code in a multi-line code block using ```. ");
         }
 
         // error message built if error found, so inform user then return false
-        if (errorResponse != "ERROR: ") {
-            msg.reply(errorResponse);
+        if (errorResponse != "") {
+            msg.reply(`ERROR: ${errorResponse}`);
             return false;
         }
 
@@ -104,17 +135,22 @@ export default class Handler {
             // TODO: accept input args (optional) from user
         }
 
-        if (!this.checkCreateValid(msg, create))
-            return null;
+        console.log(create);
+
+        if (!this.checkCreateValid(msg, create)) {
+            console.log("returning null")
+            return null; }
 
         let url = this.buildCreateURL(create);
         let response = await this.post(create, url);
 
         // use getDetails in order to retrieve stdout from user program
         let details = await this.getDetails(response.id);
-
-        let reply = `Request ID: ${response.id}\nInput: ${create.source_code}\nOutput: ${details.stdout}`;
-        msg.reply(reply);
+            ;
+        msg.reply(`\`\`\`
+        iD: ${response.id}
+        source_code: ${create.source_code}
+        stdout: ${details.stdout}\`\`\``);
     }
 
     // POST method takes action - run create runner
@@ -123,9 +159,6 @@ export default class Handler {
         const response = await fetch(url, {
             method: "POST"
         }).then((response) => response.json());
-
-        if (!response.ok)
-            return Promise.reject();
         
         return response;
     }
@@ -136,10 +169,6 @@ export default class Handler {
         const response = await fetch(url, {
             method: "GET"
         }).then((response) => response.json());
-
-        if (!response.ok)
-            return Promise.reject();
-
         return response;
     }
 
@@ -149,11 +178,6 @@ export default class Handler {
         const response = await fetch(url, {
             method: "GET"
         }).then((response) => response.json());
-
-        if (!response.ok)
-            return Promise.reject();
-
-        console.log(response);
         return response;
     }
 
@@ -178,18 +202,23 @@ export default class Handler {
 
         let start = content.indexOf("```");
         let end = content.lastIndexOf("```");
-        let result = (start != -1 && end != -1)? content.slice(start + 3, end) : "ERROR: Please encase your code in a multi-line code block using ```.";
+        let result = (start != -1 && end != -1)? content.slice(start + 3, end) : "";
 
         return result;
     }
+    
 
     // parses language out of input
     private parseLanguage(content: string) {
         // if content.indexOf(' ') returns -1 then language is the last part of user input (INVALID INPUT)
         // need to ensure in this case that we do not slide from (0, -1) in order for the Handler to throw correct errors
-        let index = content.indexOf(' ');
+        let index: number = content.indexOf(' ');
 
-        return (index != -1)? content.slice(0, content.indexOf(' ')).toLowerCase() : content;
+        let lang = (index != -1)? content.slice(0, content.indexOf(' ')).toLowerCase() : content;
+
+        // if input is invalid return empty string
+
+        return (this.validLanguages.has(lang))? lang : "";
     }
 
 }

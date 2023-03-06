@@ -1,4 +1,4 @@
-// pizzabot - the brain behind Discord bot chi the code cat    
+// codeBot - a Discord bot for running code in Discord using Paiza API
 // Built by Ryan Truong
 
 import { Client, Events, GatewayIntentBits } from "discord.js";
