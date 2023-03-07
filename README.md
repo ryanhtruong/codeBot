@@ -2,7 +2,7 @@
 
 Discord bot that allows users to run code in Discord via message.
 
-Uses Discord.js and Paiza API.
+Using TypeScript, node, yarn, Discord.js and Paiza API.
 
 When setting up this bot, be sure to include a file called "Config.json" in the project directory containing your bot's token like such:
 
