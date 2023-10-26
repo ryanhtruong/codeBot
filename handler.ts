@@ -12,12 +12,7 @@ interface Create {
 }
 
 
-/*  Introducing the Handler™
-    Surname: Handler™
-    Given name: the
-    Likeness: (⌐■_■)
-    Fun fact: will bring stolen door handles to show-and-tell
-*/
+
 export default class Handler {
 
     // base url to access Paiza API - will exist in every Paiza URL
